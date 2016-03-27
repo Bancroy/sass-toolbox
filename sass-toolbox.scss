@@ -5,3 +5,12 @@
     License:        MIT
     Repository:     https://github.com/Bancroy/sass-toolbox
 */
+
+// Standard clearfix for float layouts
+@mixin clearfix() {
+    &::after {
+        clear: both;
+        content: "";
+        display: table;
+    }
+}
