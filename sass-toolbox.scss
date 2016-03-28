@@ -6,6 +6,64 @@
     Repository:     https://github.com/Bancroy/sass-toolbox
 */
 
+// Breakpoints manager
+// Global data -> [map(string, integer)] breakpoint-name:break-screen-width
+/*
+    <variable>               <type>         <default>      <usage>
+    $breakpoint-name         [required]     ()             |Breakpoint name from map $breakpoints {string}
+    $breakpoint-type         [required]     ()             |Breakpoint type {string(and-down, only, and-up)}
+*/
+$breakpoints: (
+    "xs": 0,
+    "sm": 544,
+    "md": 768,
+    "lg": 992,
+    "xl": 1200
+);
+@mixin breakpoint($breakpoint-name, $breakpoint-type) {
+    $breakpoint-names: map-keys($breakpoints);
+    $breakpoint-index: index($breakpoint-names, $breakpoint-name);
+    
+    $is-first-and-zero: if($breakpoint-index == 1 and map-get($breakpoints, $breakpoint-name) == 0, true, false);
+    $is-last: if($breakpoint-index == length($breakpoint-names), true, false);
+    @if $breakpoint-type == "and-down" and $is-last { @warn "This breakpoint makes no sense."; }
+    @if $breakpoint-type == "and-up" and $is-first-and-zero { @warn "This breakpoint makes no sense."; }
+    @if $breakpoint-type == "and-down" and $is-first-and-zero { @warn "This breakpoint could be [only]."; }
+    @if $breakpoint-type == "and-up" and $is-last { @warn "This breakpoint could be [only]."; }
+    
+    @function breakpoint-next() {
+        @return if($breakpoint-index < length($breakpoint-names), nth(nth($breakpoints, $breakpoint-index + 1), 1), null);
+    }
+    
+    @function breakpoint-min($breakpoint-name: $breakpoint-name) {
+        $min: map-get($breakpoints, $breakpoint-name);
+        @return if($min > 0, $min, null);
+    }
+    
+    @function breakpoint-max($breakpoint-name: $breakpoint-name) {
+        $next: breakpoint-next();
+        @return if($next, breakpoint-min($next) - 1, null);
+    }
+    
+    @mixin breakpoint-down() {
+        $max: breakpoint-max();
+        @if $max { @media (max-width: $max + "px") { @content; } } @else { @content; }
+    }
+    
+    @mixin breakpoint-up() {
+        $min: breakpoint-min();
+        @if $min { @media (min-width: $min + "px") { @content; } } @else { @content; }
+    }
+    
+    @if $breakpoint-type == "and-down" {
+        @include breakpoint-down();
+    } @else if $breakpoint-type == "only" {
+        @include breakpoint-up() { @include breakpoint-down(); };
+    } @else if $breakpoint-type == "and-up" {
+        @include breakpoint-up();
+    }
+}
+
 // Standard clearfix for float layouts
 @mixin clearfix() {
     &::after {
