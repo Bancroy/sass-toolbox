@@ -81,22 +81,19 @@ $breakpoints: (
     $unit                    [required]     ()             |Unit of font-size {px, em, rem}
     $breakpoint-final        [optional]     (1000)         |Value of breakpoint at last step {integer, float}
     $steps                   [optional]     (10)           |Amount of steps between base and final breakpoint values {integer}
-    $breakpoint-base         [optional]     (361)          |Value of breakpoint at first step {integer, float}
-    $breakpoint-unit         [optional]     ("px")         |Unit of breakpoint {px, em, rem}
+    $breakpoint-base         [optional]     (361)          |Value of breakpoint at first step {integer}
 */
-@mixin flow-text($size-start, $size-end, $unit, $breakpoint-final: 1000, $steps: 10, $breakpoint-base: 361, $breakpoint-unit: "px") {
+@mixin flow-text($size-start, $size-end, $unit, $breakpoint-final: 1000, $steps: 10, $breakpoint-base: 361) {
     $steps: $steps - 1;
     $unit: unquote($unit);
-    $breakpoint-unit: unquote($breakpoint-unit);
     
     font-size: $size-start + $unit;
     
     @for $step from 0 through $steps {
         $step-difference: ($breakpoint-final - $breakpoint-base) / $steps;
-        $breakpoint-step: $breakpoint-base + $step-difference * $step;
-        @if $breakpoint-unit == px { $breakpoint-step: round($breakpoint-step); }
+        $breakpoint-step: round($breakpoint-base + $step-difference * $step);
         
-        @media only screen and (min-width: $breakpoint-step + $breakpoint-unit) {
+        @media only screen and (min-width: $breakpoint-step + "px") {
             $size-step: $size-start + (($size-end - $size-start) / ($steps + 1) * ($step + 1));
             @if $unit == px { $size-step: round($size-step); }
             
