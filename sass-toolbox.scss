@@ -73,6 +73,57 @@ $breakpoints: (
     }
 }
 
+// Flexbox based fluid grid
+// Global data -> [map(string, integer)] breakpoint-name:break-screen-width
+/*
+    <variable>               <type>         <default>      <usage>
+    $container-width         [optional]     ("1200px")     |Container max-width {string}
+    $columns                 [optional]     (16)           |Grid columns count {integer}
+    $gutter-width            [optional]     ("20px")       |Grid single gutter width {string}
+    $unit                    [optional]     ("px")         |Unit of container max-width and gutter width {string(px, em, rem)}
+*/
+$breakpoints: (
+    "xs": 0,
+    "sm": 544,
+    "md": 768,
+    "lg": 992,
+    "xl": 1200
+);
+@mixin flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px") {
+    .container {
+        margin: 0 auto;
+        max-width: unquote($container-width);
+        position: relative;
+        width: 95%;
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+
+            & .column {
+                box-sizing: border-box;
+                padding: 0 unquote($gutter-width) / 2;
+
+                @each $breakpoint-name, $breakpoint-value in $breakpoints {
+                    @for $column from 1 through $columns {
+                        $perc: percentage($column / $columns);
+
+                        @include breakpoint($breakpoint-name, "only") {
+                            &.#{$breakpoint-name}-#{$column} {
+                                flex-basis: $perc;
+                            }
+
+                            &.offset-#{$breakpoint-name}-#{$column} {
+                                margin-left: $perc;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Smoothly scaled font-size
 /*
     <variable>               <type>         <default>      <usage>
