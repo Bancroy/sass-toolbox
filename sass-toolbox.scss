@@ -78,7 +78,7 @@ $breakpoints: (
     <variable>               <type>         <default>      <usage>
     $size-start              [required]     ()             |Inital font-size of element {integer, float}
     $size-end                [required]     ()             |Font-size to be reached on last step {integer, float}
-    $unit                    [required]     ()             |Unit of font-size {px, em, rem}
+    $unit                    [required]     ()             |Unit of font-size {string(px, em, rem)}
     $breakpoint-final        [optional]     (1000)         |Value of breakpoint at last step {integer, float}
     $steps                   [optional]     (10)           |Amount of steps between base and final breakpoint values {integer}
     $breakpoint-base         [optional]     (361)          |Value of breakpoint at first step {integer}
