@@ -90,9 +90,11 @@ $breakpoints: (
     "xl": 1200
 );
 @mixin flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px") {
+    $unit: unquote($unit);
+    
     .container {
         margin: 0 auto;
-        max-width: unquote($container-width);
+        max-width: $container-width + $unit;
         position: relative;
         width: 95%;
 
@@ -102,7 +104,7 @@ $breakpoints: (
 
             & .column {
                 box-sizing: border-box;
-                padding: 0 unquote($gutter-width) / 2;
+                padding: 0 ($gutter-width / 2) + $unit;
 
                 @each $breakpoint-name, $breakpoint-value in $breakpoints {
                     @for $column from 1 through $columns {
