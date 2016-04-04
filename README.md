@@ -63,8 +63,8 @@ Clearfix **.container** that has two floated children inside - **.left** and **.
 ```
 
 ### flexbox-grid()
-Create flexbox based grid with fluid widths:
-@mixin
+Create flexbox based grid with fluid widths:  
+@mixin  
 flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px")
 
 #### Dependencies
