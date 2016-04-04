@@ -4,11 +4,12 @@ Simple but functional SASS stuff. To make your life easier.
 Just copy whatever you need from **sass-toolbox.scss** and use it in your project.
 
 ## Documentation
-| Type  | Name       | Description                         |
-| :---: | :--------: | :---------------------------------- |
-| mixin | breakpoint | Breakpoints manager                 |
-| mixin | clearfix   | Standard clearfix for float layouts |
-| mixin | flow-text  | Smoothly scaled font-size           |
+| Type  | Name         | Description                         |
+| :---: | :----------: | :---------------------------------- |
+| mixin | breakpoint   | Breakpoints manager                 |
+| mixin | clearfix     | Standard clearfix for float layouts |
+| mixin | flexbox-grid | Flexbox based fluid grid            |
+| mixin | flow-text    | Smoothly scaled font-size           |
 
 ### breakpoint()
 With this **single mixin** you can maintain responsiveness of your styles easly:  
@@ -65,6 +66,9 @@ Clearfix **.container** that has two floated children inside - **.left** and **.
 Create flexbox based grid with fluid widths:
 @mixin
 flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px")
+
+#### Dependencies
+* breakpoint()
 
 #### Setup
 Prepare global map with breakpoints (this is default):  
