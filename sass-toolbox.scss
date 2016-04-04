@@ -74,6 +74,7 @@ $breakpoints: (
 }
 
 // Flexbox based fluid grid
+// Dependencies -> breakpoint()
 // Global data -> [map(string, integer)] breakpoint-name:break-screen-width
 /*
     <variable>               <type>         <default>      <usage>
