@@ -13,6 +13,7 @@
     $breakpoint-name         [required]     ()             |Breakpoint name from map $breakpoints {string}
     $breakpoint-type         [required]     ()             |Breakpoint type {string(and-down, only, and-up)}
     $breakpoint-between      [optional]     (null)         |Breakpoint name for upper limit {string}
+    $verbose                 [optional]     (true)         |Enables possible optimization warning {boolean}
 */
 @function breakpoint-next($breakpoint-names, $breakpoint-name, $breakpoint-index) {
     @return if($breakpoint-index < length($breakpoint-names), nth(nth($breakpoints, $breakpoint-index + 1), 1), null);
@@ -38,16 +39,18 @@
     @if $min { @media (min-width: $min + "px") { @content; } } @else { @content; }
 }
 
-@mixin breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between: null) {
+@mixin breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between: null, $verbose: true) {
     $breakpoint-names: map-keys($breakpoints);
     $breakpoint-index: index($breakpoint-names, $breakpoint-name);
 
-    $is-first-and-zero: if($breakpoint-index == 1 and map-get($breakpoints, $breakpoint-name) == 0, true, false);
-    $is-last: if($breakpoint-index == length($breakpoint-names), true, false);
-    @if $breakpoint-type == "and-down" and $is-last { @warn "This breakpoint makes no sense."; }
-    @if $breakpoint-type == "and-up" and $is-first-and-zero { @warn "This breakpoint makes no sense."; }
-    @if $breakpoint-type == "and-down" and $is-first-and-zero { @warn "This breakpoint could be [only]."; }
-    @if $breakpoint-type == "and-up" and $is-last { @warn "This breakpoint could be [only]."; }
+    @if $verbose {
+        $is-first-and-zero: if($breakpoint-index == 1 and map-get($breakpoints, $breakpoint-name) == 0, true, false);
+        $is-last: if($breakpoint-index == length($breakpoint-names), true, false);
+        @if $breakpoint-type == "and-down" and $is-last { @warn "This breakpoint makes no sense."; }
+        @if $breakpoint-type == "and-up" and $is-first-and-zero { @warn "This breakpoint makes no sense."; }
+        @if $breakpoint-type == "and-down" and $is-first-and-zero { @warn "This breakpoint could be [only]."; }
+        @if $breakpoint-type == "and-up" and $is-last { @warn "This breakpoint could be [only]."; }
+    }
 
     @if $breakpoint-type == "and-down" {
         @include breakpoint-down($breakpoint-names, $breakpoint-name, $breakpoint-index) { @content; };
@@ -56,7 +59,7 @@
     } @else if $breakpoint-type == "between" {
         @if $breakpoint-name == $breakpoint-between { @error "You must use two different breakpoints with [between]."; }
         @if map-get($breakpoints, $breakpoint-name) > map-get($breakpoints, $breakpoint-between) {
-            @warn "You should pass smaller breakpoint as first argument when using [between].";
+            @if $verbose { @warn "You should pass smaller breakpoint as first argument when using [between]."; }
             $tmp: $breakpoint-between;
             $breakpoint-between: $breakpoint-name;
             $breakpoint-name: $tmp;
@@ -109,7 +112,7 @@
             @for $column from 1 through $columns {
                 $perc: percentage($column / $columns);
 
-                @include breakpoint($breakpoint-name, "only") {
+                @include breakpoint($breakpoint-name, "and-up", null, false) {
                     &.#{$breakpoint-name}-#{$column} {
                         flex-basis: $perc;
                     }

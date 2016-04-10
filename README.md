@@ -14,7 +14,7 @@ Just copy whatever you need from **sass-toolbox.scss** and use it in your projec
 ### breakpoint()
 With this **single mixin** you can maintain responsiveness of your styles easly:  
 @mixin  
-breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between)
+breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between, $verbose)
 
 #### Setup
 Prepare global map with breakpoints (this is default):  
