@@ -12,6 +12,7 @@
     <variable>               <type>         <default>      <usage>
     $breakpoint-name         [required]     ()             |Breakpoint name from map $breakpoints {string}
     $breakpoint-type         [required]     ()             |Breakpoint type {string(and-down, only, and-up)}
+    $breakpoint-between      [optional]     (null)         |Breakpoint name for upper limit {string}
 */
 $breakpoints: (
     "xs": 0,
@@ -39,7 +40,7 @@ $breakpoints: (
     $min: breakpoint-min($breakpoint-name);
     @if $min { @media (min-width: $min + "px") { @content; } } @else { @content; }
 }
-@mixin breakpoint($breakpoint-name, $breakpoint-type) {
+@mixin breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between: null) {
     $breakpoint-names: map-keys($breakpoints);
     $breakpoint-index: index($breakpoint-names, $breakpoint-name);
 
@@ -54,6 +55,15 @@ $breakpoints: (
         @include breakpoint-down($breakpoint-names, $breakpoint-name, $breakpoint-index) { @content; };
     } @else if $breakpoint-type == "only" {
         @include breakpoint-up($breakpoint-name) { @include breakpoint-down($breakpoint-names, $breakpoint-name, $breakpoint-index) { @content; }; };
+    } @else if $breakpoint-type == "between" {
+        @if $breakpoint-name == $breakpoint-between { @error "You must use two different breakpoints with [between]."; }
+        @if map-get($breakpoints, $breakpoint-name) > map-get($breakpoints, $breakpoint-between) {
+            @warn "You should pass smaller breakpoint as first argument when using [between].";
+            $tmp: $breakpoint-between;
+            $breakpoint-between: $breakpoint-name;
+            $breakpoint-name: $tmp;
+        }
+        @include breakpoint-up($breakpoint-name) { @include breakpoint-down($breakpoint-names, $breakpoint-between, index($breakpoint-names, $breakpoint-between)) { @content; }; };
     } @else if $breakpoint-type == "and-up" {
         @include breakpoint-up($breakpoint-name) { @content; };
     }
