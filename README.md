@@ -42,11 +42,31 @@ Set **.container -> width** to **100%** when **screen width** is **smaller/equal
 ```
 
 #### Example usage 2
+Set **.container -> width** to **50%** when **screen width** is **between 992px and 1199px**:
+```sass
+@include breakpoint("lg", "only") {
+    .container {
+        width: 50%;
+    }
+}
+```
+
+#### Example usage 3
 Set **.container -> width** to **90%** when **screen width** is **between 544px and 1199px**:
 ```sass
 @include breakpoint("sm", "between", "lg") {
     .container {
         width: 90%;
+    }
+}
+```
+
+#### Example usage 4
+Set **.container -> width** to **40%** when **screen width** is **bigger/equal 768px**:
+```sass
+@include breakpoint("md", "and-up") {
+    .container {
+        width: 40%;
     }
 }
 ```
