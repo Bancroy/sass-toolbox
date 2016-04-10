@@ -14,7 +14,7 @@ Just copy whatever you need from **sass-toolbox.scss** and use it in your projec
 ### breakpoint()
 With this **single mixin** you can maintain responsiveness of your styles easly:  
 @mixin  
-breakpoint($breakpoint-name, $breakpoint-type)
+breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between)
 
 #### Setup
 Prepare global map with breakpoints (this is default):  
@@ -31,12 +31,42 @@ $breakpoints: (
 ```
 ! Width at which each breakpoint starts is set in **px**
 
-#### Example usage
+#### Example usage 1
 Set **.container -> width** to **100%** when **screen width** is **smaller/equal 767px**:
 ```sass
 @include breakpoint("sm", "and-down") {
     .container {
         width: 100%;
+    }
+}
+```
+
+#### Example usage 2
+Set **.container -> width** to **50%** when **screen width** is **between 992px and 1199px**:
+```sass
+@include breakpoint("lg", "only") {
+    .container {
+        width: 50%;
+    }
+}
+```
+
+#### Example usage 3
+Set **.container -> width** to **90%** when **screen width** is **between 544px and 1199px**:
+```sass
+@include breakpoint("sm", "between", "lg") {
+    .container {
+        width: 90%;
+    }
+}
+```
+
+#### Example usage 4
+Set **.container -> width** to **40%** when **screen width** is **bigger/equal 768px**:
+```sass
+@include breakpoint("md", "and-up") {
+    .container {
+        width: 40%;
     }
 }
 ```

@@ -12,6 +12,7 @@
     <variable>               <type>         <default>      <usage>
     $breakpoint-name         [required]     ()             |Breakpoint name from map $breakpoints {string}
     $breakpoint-type         [required]     ()             |Breakpoint type {string(and-down, only, and-up)}
+    $breakpoint-between      [optional]     (null)         |Breakpoint name for upper limit {string}
 */
 $breakpoints: (
     "xs": 0,
@@ -20,47 +21,51 @@ $breakpoints: (
     "lg": 992,
     "xl": 1200
 );
-@mixin breakpoint($breakpoint-name, $breakpoint-type) {
+@function breakpoint-next($breakpoint-names, $breakpoint-name, $breakpoint-index) {
+    @return if($breakpoint-index < length($breakpoint-names), nth(nth($breakpoints, $breakpoint-index + 1), 1), null);
+}
+@function breakpoint-min($breakpoint-name) {
+    $min: map-get($breakpoints, $breakpoint-name);
+    @return if($min > 0, $min, null);
+}
+@function breakpoint-max($breakpoint-names, $breakpoint-name, $breakpoint-index) {
+    $next: breakpoint-next($breakpoint-names, $breakpoint-name, $breakpoint-index);
+    @return if($next, breakpoint-min($next) - 1, null);
+}
+@mixin breakpoint-down($breakpoint-names, $breakpoint-name, $breakpoint-index) {
+    $max: breakpoint-max($breakpoint-names, $breakpoint-name, $breakpoint-index);
+    @if $max { @media (max-width: $max + "px") { @content; } } @else { @content; }
+}
+@mixin breakpoint-up($breakpoint-name) {
+    $min: breakpoint-min($breakpoint-name);
+    @if $min { @media (min-width: $min + "px") { @content; } } @else { @content; }
+}
+@mixin breakpoint($breakpoint-name, $breakpoint-type, $breakpoint-between: null) {
     $breakpoint-names: map-keys($breakpoints);
     $breakpoint-index: index($breakpoint-names, $breakpoint-name);
-    
+
     $is-first-and-zero: if($breakpoint-index == 1 and map-get($breakpoints, $breakpoint-name) == 0, true, false);
     $is-last: if($breakpoint-index == length($breakpoint-names), true, false);
     @if $breakpoint-type == "and-down" and $is-last { @warn "This breakpoint makes no sense."; }
     @if $breakpoint-type == "and-up" and $is-first-and-zero { @warn "This breakpoint makes no sense."; }
     @if $breakpoint-type == "and-down" and $is-first-and-zero { @warn "This breakpoint could be [only]."; }
     @if $breakpoint-type == "and-up" and $is-last { @warn "This breakpoint could be [only]."; }
-    
-    @function breakpoint-next() {
-        @return if($breakpoint-index < length($breakpoint-names), nth(nth($breakpoints, $breakpoint-index + 1), 1), null);
-    }
-    
-    @function breakpoint-min($breakpoint-name: $breakpoint-name) {
-        $min: map-get($breakpoints, $breakpoint-name);
-        @return if($min > 0, $min, null);
-    }
-    
-    @function breakpoint-max($breakpoint-name: $breakpoint-name) {
-        $next: breakpoint-next();
-        @return if($next, breakpoint-min($next) - 1, null);
-    }
-    
-    @mixin breakpoint-down() {
-        $max: breakpoint-max();
-        @if $max { @media (max-width: $max + "px") { @content; } } @else { @content; }
-    }
-    
-    @mixin breakpoint-up() {
-        $min: breakpoint-min();
-        @if $min { @media (min-width: $min + "px") { @content; } } @else { @content; }
-    }
-    
+
     @if $breakpoint-type == "and-down" {
-        @include breakpoint-down();
+        @include breakpoint-down($breakpoint-names, $breakpoint-name, $breakpoint-index) { @content; };
     } @else if $breakpoint-type == "only" {
-        @include breakpoint-up() { @include breakpoint-down(); };
+        @include breakpoint-up($breakpoint-name) { @include breakpoint-down($breakpoint-names, $breakpoint-name, $breakpoint-index) { @content; }; };
+    } @else if $breakpoint-type == "between" {
+        @if $breakpoint-name == $breakpoint-between { @error "You must use two different breakpoints with [between]."; }
+        @if map-get($breakpoints, $breakpoint-name) > map-get($breakpoints, $breakpoint-between) {
+            @warn "You should pass smaller breakpoint as first argument when using [between].";
+            $tmp: $breakpoint-between;
+            $breakpoint-between: $breakpoint-name;
+            $breakpoint-name: $tmp;
+        }
+        @include breakpoint-up($breakpoint-name) { @include breakpoint-down($breakpoint-names, $breakpoint-between, index($breakpoint-names, $breakpoint-between)) { @content; }; };
     } @else if $breakpoint-type == "and-up" {
-        @include breakpoint-up();
+        @include breakpoint-up($breakpoint-name) { @content; };
     }
 }
 
