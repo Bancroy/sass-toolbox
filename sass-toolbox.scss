@@ -116,7 +116,9 @@
                     &.#{$breakpoint-name}-#{$column} {
                         flex-basis: $perc;
                     }
+                }
 
+                @include breakpoint($breakpoint-name, "only") {
                     &.offset-#{$breakpoint-name}-#{$column} {
                         margin-left: $perc;
                     }
