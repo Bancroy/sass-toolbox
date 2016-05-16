@@ -94,7 +94,7 @@ Clearfix **.container** that has two floated children inside - **.left** and **.
 ```
 
 ### extensions()
-Expand class with multiple conditional styling:  
+Expand class with multiple class-based conditional styling:  
 @mixin  
 extensions($list)
 
@@ -112,7 +112,7 @@ $extensions: (
     )
 );
 ```
-! Attribute value must be **string** (it can contain numbers)
+! Attribute value must be a **string** (it can contain numbers)
 
 #### Example usage 1
 Expand class **.arrow** with **.left** to create **.arrow.left**:
@@ -127,6 +127,7 @@ $extensions: (
         right:    "0
     )
 );
+
 .arrow {
     @include extensions($extensions);
 }
