@@ -7,7 +7,7 @@
 */
 
 // Breakpoints manager
-// Global data -> [map(string, integer)] breakpoint-name:break-screen-width
+// Global data -> [map(key, integer)] breakpoint-name:break-screen-width
 /*
     <variable>               <type>         <default>      <usage>
     $breakpoint-name         [required]     ()             |Breakpoint name from map $breakpoints {string}
@@ -79,8 +79,26 @@
     }
 }
 
+// Shorthand for class expanding
+/*
+    Associated map format <extensions>:
+    key >> map >> string
+    !strings are css {attribute: value} to embed in extension
+*/
+/*
+    <variable>               <type>         <default>      <usage>
+    $list                    [required]     ()             |Extensions list {map<extenstions>}
+*/
+@mixin extensions($list) {
+    @each $extension, $value in $list {
+        &.#{$extension} {
+            @each $attribute, $attribute-value in $value { #{$attribute}: unquote($attribute-value); }
+        }
+    }
+}
+
 // Flexbox based fluid grid
-// Dependencies -> breakpoint()
+// Dependencies -> breakpoint(), extensions()
 // Global data -> [map(string, integer)] breakpoint-name:break-screen-width
 /*
     <variable>               <type>         <default>      <usage>
@@ -141,64 +159,43 @@
     }
 
     .row {
+        @include extensions((
+            around:     (justify-content: "space-around"),
+            baseline:   (
+                align-content: "baseline",
+                align-items:   "baseline"
+            ),
+            between:    (justify-content: "space-between"),
+            bottom:     (
+                align-content: "flex-end",
+                align-items:   "flex-end"
+            ),
+            center:     (justify-content: "center"),
+            end:        (justify-content: "flex-end"),
+            middle:     (
+                align-content: "center",
+                align-items:   "center"
+            ),
+            no-padding: (padding: "0"),
+            no-wrap:    (flex-wrap: "nowrap"),
+            reverse:    (flex-direction: "row-reverse"),
+            start:      (justify-content: "flex-start"),
+            stretch:    (
+                align-content: "stretch",
+                align-items:   "stretch"
+            ),
+            top:        (
+                align-content: "flex-start",
+                align-items:   "flex-start"
+            ),
+            vertical:   (flex-direction: "column")
+        ));
         align-items: flex-start;
         display: flex;
         flex-wrap: wrap;
 
-        &.around {
-            justify-content: space-around;
-        }
-
-        &.baseline {
-            align-items: baseline;
-        }
-
-        &.between {
-            justify-content: space-between;
-        }
-
-        &.bottom {
-            align-items: flex-end;
-        }
-
-        &.center {
-            justify-content: center;
-        }
-
-        &.end {
-            justify-content: flex-end;
-        }
-
-        &.middle {
-            align-items: flex-start;
-        }
-
-        &.no-padding {
-            padding: 0;
-        }
-
-        &.reverse {
-            flex-direction: row-reverse;
-        }
-
-        &.start {
-            justify-content: flex-start;
-        }
-
-        &.stretch {
-            align-items: stretch;
-        }
-
-        &.top {
-            align-items: flex-start;
-        }
-
-        &.vertical {
-            flex-direction: column;
-
-            &.reverse {
-                flex-direction: column-reverse;
-            }
+        &.vertical.reverse {
+            flex-direction: column-reverse;
         }
     }
 }
