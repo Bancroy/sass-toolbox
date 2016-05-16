@@ -7,7 +7,7 @@
 */
 
 // Breakpoints manager
-// Global data -> [map(string, integer)] breakpoint-name:break-screen-width
+// Global data -> [map(key, integer)] breakpoint-name:break-screen-width
 /*
     <variable>               <type>         <default>      <usage>
     $breakpoint-name         [required]     ()             |Breakpoint name from map $breakpoints {string}
@@ -79,8 +79,25 @@
     }
 }
 
+// Shorthand for class expanding
+/*
+    Associated map format <extensions>:
+    key >> map >> string
+*/
+/*
+    <variable>               <type>         <default>      <usage>
+    $list                    [required]     ()             |Extensions list {map<extenstions>}
+*/
+@mixin extensions($list) {
+    @each $extension, $value in $list {
+        &.#{$extension} {
+            @each $attribute, $attribute-value in $value { #{$attribute}: unquote($attribute-value); }
+        }
+    }
+}
+
 // Flexbox based fluid grid
-// Dependencies -> breakpoint()
+// Dependencies -> breakpoint(), extensions()
 // Global data -> [map(string, integer)] breakpoint-name:break-screen-width
 /*
     <variable>               <type>         <default>      <usage>
@@ -92,21 +109,26 @@
 @mixin flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px") {
     $unit: unquote($unit);
 
-    .container {
-        margin: 0 auto;
-        max-width: $container-width + $unit;
-        position: relative;
-        width: 95%;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
     .column {
         box-sizing: border-box;
+        flex: 0 0 auto;
         padding: 0 ($gutter-width / 2) + $unit;
+
+        &.first {
+            order: -1;
+        }
+
+        &.last {
+            order: 1;
+        }
+
+        @each $breakpoint-name, $breakpoint-value in $breakpoints {
+            @include breakpoint($breakpoint-name, "and-up", null, false) {
+                &.#{$breakpoint-name}-auto {
+                    flex: 1 1 auto;
+                }
+            }
+        }
 
         @each $breakpoint-name, $breakpoint-value in $breakpoints {
             @for $column from 1 through $columns {
@@ -115,13 +137,64 @@
                 @include breakpoint($breakpoint-name, "and-up", null, false) {
                     &.#{$breakpoint-name}-#{$column} {
                         flex-basis: $perc;
+                        max-width: $perc;
                     }
+                }
 
+                @include breakpoint($breakpoint-name, "only") {
                     &.offset-#{$breakpoint-name}-#{$column} {
                         margin-left: $perc;
                     }
                 }
             }
+        }
+    }
+
+    .container {
+        margin: 0 auto;
+        max-width: $container-width + $unit;
+        position: relative;
+        width: 95%;
+    }
+
+    .row {
+        @include extensions((
+            around:     (justify-content: "space-around"),
+            baseline:   (
+                align-content: "baseline",
+                align-items:   "baseline"
+            ),
+            between:    (justify-content: "space-between"),
+            bottom:     (
+                align-content: "flex-end",
+                align-items:   "flex-end"
+            ),
+            center:     (justify-content: "center"),
+            end:        (justify-content: "flex-end"),
+            middle:     (
+                align-content: "center",
+                align-items:   "center"
+            ),
+            no-padding: (padding: "0"),
+            no-wrap:    (flex-wrap: "nowrap"),
+            reverse:    (flex-direction: "row-reverse"),
+            start:      (justify-content: "flex-start"),
+            stretch:    (
+                align-content: "stretch",
+                align-items:   "stretch"
+            ),
+            top:        (
+                align-content: "flex-start",
+                align-items:   "flex-start"
+            ),
+            vertical:   (flex-direction: "column")
+        ));
+        align-items: flex-start;
+        display: flex;
+        flex-wrap: wrap;
+
+        &.vertical.reverse {
+            flex-direction: column-reverse;
         }
     }
 }

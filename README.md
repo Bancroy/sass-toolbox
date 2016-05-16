@@ -8,6 +8,7 @@ Just copy whatever you need from **sass-toolbox.scss** and use it in your projec
 | :---: | :----------: | :---------------------------------- |
 | mixin | breakpoint   | Breakpoints manager                 |
 | mixin | clearfix     | Standard clearfix for float layouts |
+| mixin | extensions   | Shorthand for class expanding       |
 | mixin | flexbox-grid | Flexbox based fluid grid            |
 | mixin | flow-text    | Smoothly scaled font-size           |
 
@@ -92,6 +93,51 @@ Clearfix **.container** that has two floated children inside - **.left** and **.
 }
 ```
 
+### extensions()
+Expand class with multiple class-based conditional styling:  
+@mixin  
+extensions($list)
+
+#### Setup
+Associated map format *extensions*: key >> map >> string
+
+Prepare map with data (this is example):  
+[ extensions ]  
+[ extension: [ attribute: "value" ] ]
+```sass
+$extensions: (
+    left: (
+        left: "0",
+        position: "absolute"
+    )
+);
+```
+! Attribute value must be a **string** (it can contain numbers)
+
+#### Example usage 1
+Expand class **.arrow** with **.left** to create **.arrow.left**:
+```sass
+$extensions: (
+    left: (
+        left:     "0",
+        position: "absolute"
+    ),
+    right (
+        position: "absolute",
+        right:    "0
+    )
+);
+
+.arrow {
+    @include extensions($extensions);
+}
+```
+
+```html
+<div class="arrow left"></div>
+<div class="arrow right"></div>
+```
+
 ### flexbox-grid()
 Create flexbox based grid with fluid widths:  
 @mixin  
@@ -102,8 +148,8 @@ flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px
 
 #### Setup
 Prepare global map with breakpoints (this is default):  
-[ string: integer ]  
-[ "breakpoint-name": break-screen-width ]
+[ key: number ]  
+[ breakpoint-name: break-screen-width ]
 ```sass
 $breakpoints: (
     "xs": 0,
