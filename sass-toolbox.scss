@@ -92,21 +92,26 @@
 @mixin flexbox-grid($container-width: 1200, $columns: 16, $gutter-width: 20, $unit: "px") {
     $unit: unquote($unit);
 
-    .container {
-        margin: 0 auto;
-        max-width: $container-width + $unit;
-        position: relative;
-        width: 95%;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
     .column {
         box-sizing: border-box;
+        flex-grow: 0 0 auto;
         padding: 0 ($gutter-width / 2) + $unit;
+
+        &.first {
+            order: -1;
+        }
+
+        &.last {
+            order: 1;
+        }
+
+        @each $breakpoint-name, $breakpoint-value in $breakpoints {
+            @include breakpoint($breakpoint-name, "and-up", null, false) {
+                &.#{$breakpoint-name}-auto {
+                    flex: 1 1 auto;
+                }
+            }
+        }
 
         @each $breakpoint-name, $breakpoint-value in $breakpoints {
             @for $column from 1 through $columns {
@@ -115,6 +120,7 @@
                 @include breakpoint($breakpoint-name, "and-up", null, false) {
                     &.#{$breakpoint-name}-#{$column} {
                         flex-basis: $perc;
+                        max-width: $perc;
                     }
                 }
 
@@ -123,6 +129,75 @@
                         margin-left: $perc;
                     }
                 }
+            }
+        }
+    }
+
+    .container {
+        margin: 0 auto;
+        max-width: $container-width + $unit;
+        position: relative;
+        width: 95%;
+    }
+
+    .row {
+        align-items: flex-start;
+        display: flex;
+        flex-wrap: wrap;
+
+        &.around {
+            justify-content: space-around;
+        }
+
+        &.baseline {
+            align-items: baseline;
+        }
+
+        &.between {
+            justify-content: space-between;
+        }
+
+        &.bottom {
+            align-items: flex-end;
+        }
+
+        &.center {
+            justify-content: center;
+        }
+
+        &.end {
+            justify-content: flex-end;
+        }
+
+        &.middle {
+            align-items: flex-start;
+        }
+
+        &.no-padding {
+            padding: 0;
+        }
+
+        &.reverse {
+            flex-direction: row-reverse;
+        }
+
+        &.start {
+            justify-content: flex-start;
+        }
+
+        &.stretch {
+            align-items: stretch;
+        }
+
+        &.top {
+            align-items: flex-start;
+        }
+
+        &.vertical {
+            flex-direction: column;
+
+            &.reverse {
+                flex-direction: column-reverse;
             }
         }
     }
