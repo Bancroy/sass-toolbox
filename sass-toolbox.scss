@@ -94,7 +94,7 @@
 
     .column {
         box-sizing: border-box;
-        flex-grow: 0 0 auto;
+        flex: 0 0 auto;
         padding: 0 ($gutter-width / 2) + $unit;
 
         &.first {
